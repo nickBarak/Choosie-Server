@@ -2,7 +2,6 @@ const express = require("express");
 const app = express();
 const bodyParser = require('body-parser');
 const { Client, Pool } = require('pg');
-const cors = require('cors');
 require('dotenv/config');
 
 const client = new Client({ connectionString: process.env.DATABASE });
