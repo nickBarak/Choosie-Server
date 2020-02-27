@@ -2,6 +2,7 @@ const express = require("express");
 const app = express();
 const bodyParser = require('body-parser');
 const { Client, Pool } = require('pg');
+const cors = require('cors');
 require('dotenv/config');
 
 const client = new Client({ connectionString: process.env.DATABASE });
@@ -11,6 +12,7 @@ client.connect()
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static('views'));
+app.use(cors());
 
 const index = require('controllers/index');
 const start = require('controllers/start/controller');
