@@ -10,7 +10,6 @@ client.connect()
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static('views'));
-app.use(cors());
 
 const index = require('controllers/index');
 const start = require('controllers/start/controller');
