@@ -11,10 +11,10 @@ client.connect()
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static('views'));
 
-const index = require('controllers/index');
-const start = require('controllers/start/controller');
-const myList = require('controllers/myList/controller');
-const popular = require('controllers/popular/controller');
+const index = require('./controllers/index');
+const start = require('./controllers/start/controller');
+const myList = require('./controllers/myList/controller');
+const popular = require('./controllers/popular/controller');
 
 app.use('/', index);
 app.use('/start', start);
