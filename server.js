@@ -2,13 +2,14 @@ const express = require("express");
 const app = express();
 const bodyParser = require('body-parser');
 const { Pool } = require('pg');
+const { allow } = require('./Clean.js');
 require('dotenv/config');
 
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static('views'));
 
-app.use( (req, res, next) => { C.allow(res, 'http://127.0.0.1:3000'); next() });
+app.use( (req, res, next) => { allow(res, 'http://127.0.0.1:3000'); next() });
 
 const index = require('./controllers/index');
 const start = require('./controllers/start');
