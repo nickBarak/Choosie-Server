@@ -1,32 +1,23 @@
 const express = require("express");
 const app = express();
 const bodyParser = require('body-parser');
-const { Client, Pool } = require('pg');
+const { Pool } = require('pg');
+require('dotenv/config');
 
-const client = new Client({ connectionString: process.env.DATABASE });
-client.connect()
-    .then(_=> console.log('Connected to PostgreSQL'))
-    .catch(e => console.log(e));
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static('views'));
 
-app.use( (req, res, next) => {
-    res.setHeader('Access-Control-Allow-Origin', 'https://choosie.us');
-    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
-    res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
-    res.setHeader('Access-Control-Allow-Credentials', true);
-    next();
-});
+app.use( (req, res, next) => { C.allow(res, 'http://127.0.0.1:3000'); next() });
 
 const index = require('./controllers/index');
-const start = require('./controllers/start/controller');
-const myList = require('./controllers/myList/controller');
-const popular = require('./controllers/popular/controller');
+const start = require('./controllers/start');
+const myList = require('./controllers/myList');
+const popular = require('./controllers/popular');
 
 app.use('/', index);
 app.use('/start', start);
 app.use('/myList', myList);
 app.use('/popular', popular);
 
-app.listen(process.env.PORT, console.log(`Listening on port ${process.env.PORT}`));
+app.listen(process.env.PORT || 3000, console.log(`Listening on port ${process.env.PORT || 3000}`));

@@ -7,6 +7,13 @@ router.get('/', async (req, res) => {
     } catch (e) {
         console.log('error' + e);
     }
-})
+});
+
+router.get('/search', async (req, res) => {
+    const user = {name: 'Paul', age: 32};
+    try {
+        res.json(user);
+    } catch (e) { console.log(e) }
+});
 
 module.exports = router;
