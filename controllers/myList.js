@@ -1,6 +1,27 @@
 const express = require('express');
 const router = express.Router();
-const db = require('../Clean.js').pg();
+const { pool } = require('../server');
+const fetch = require('node-fetch');
+
+router.get('/', async (req, res) => {
+    const { user } = req.query;
+    try {
+        var client = await pool.connect();
+        const { rows } = await client.query('SELECT currently_saved FROM users WHERE id = $1', [user]);
+        let response;
+        if (rows.length)
+            response = await rows[0].all_saved_movies.reduce(async (acc, cur) => {
+                try {
+                    const response = await fetch(`http://localhost:8082/movies?src_url=${cur}`),
+                        json = await response.json();
+                    return cur ? [...await acc, json] : acc;
+                } catch (e) { console.log(e); return acc }
+            }, []);
+        res.json(response.length ? response : [{ title: 'No results found' }]);
+    } catch (e) { console.log(e) }
+    finally { client.release() }
+});
+
 
 router.post('/', async (req, res) => {
     let movieData = []

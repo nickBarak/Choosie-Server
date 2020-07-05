@@ -1,24 +1,42 @@
 const express = require("express");
 const app = express();
-const bodyParser = require('body-parser');
+const cors = require('cors');
 const { Pool } = require('pg');
-const { allow } = require('./Clean.js');
 require('dotenv/config');
 
 
-app.use(bodyParser.urlencoded({ extended: false }));
-app.use(express.static('views'));
+app.use(cors({ origin: 'http://localhost:3000' }))
+app.use(express.urlencoded({ extended: false }));
+app.use(express.json());
 
-app.use( (req, res, next) => { allow(res, 'http://127.0.0.1:3000'); next() });
 
-const index = require('./controllers/index');
-const start = require('./controllers/start');
-const myList = require('./controllers/myList');
-const popular = require('./controllers/popular');
+const pool = new Pool({
+    connectionString: process.env.DATABASE,
+    idleTimeoutMillis: 0
+});
+exports.pool = pool;
+pool
+    ? console.log('Connected to PostgreSQL')
+    : console.log('Failed to connect to database');
+
+
+const index = require('./controllers/index'),
+    users = require('./controllers/users'),
+    search = require('./controllers/search'),
+    movies = require('./controllers/movies'),
+    start = require('./controllers/start'),
+    myList = require('./controllers/myList'),
+    popular = require('./controllers/popular');
+
 
 app.use('/', index);
+app.use('/users', users);
+app.use('/search', search);
+app.use('/movies', movies);
 app.use('/start', start);
-app.use('/myList', myList);
+app.use('/my-list', myList);
 app.use('/popular', popular);
 
+
 app.listen(process.env.PORT || 3000, console.log(`Listening on port ${process.env.PORT || 3000}`));
+
