@@ -16,17 +16,17 @@ router.get('/', async (req, res) =>{
                     switch (period) {
                         default: return '';
                         case 'Earlier':
-                            return 'release_date < 1970';
+                            return `release_date < '1970-01-01'::date`;
                         case 'Later':
-                            return 'release_date > 2000';
+                            return `release_date > '2010-01-01'::date`;
                         case '1970s':
-                            return '(release_date < 1980 AND release_date >= 1970)';
+                            return `(release_date between '1970-01-01'::date AND '1980-01-1'::date)`;
                         case '1980s':
-                            return '(release_date < 1990 AND release_date >= 1980)';
+                            return `(release_date between '1980-01-01'::date AND '1990-01-01'::date)`;
                         case '1990s':
-                            return '(release_date < 2000 AND release_date >= 1990)';
+                            return `(release_date between '1990-01-01'::date AND '2000-01-01'::date)`;
                         case '2000s':
-                            return '(release_date < 2010 AND release_date >= 2000)';
+                            return `(release_date between '2000-01-01'::date AND '2010-01-01'::date)`;
                     }
                 })()}`).join('')})`
                 : ''}
