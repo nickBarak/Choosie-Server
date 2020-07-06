@@ -30,7 +30,7 @@ router.post('/', async (req, res) => {
         .then(res => resolve(res.rows[0]))
         .catch(err => reject(console.log(err))))
 
-    let hydrateMovies = (...movies) => movies.map(movie => new Promise( (resolve, reject) => db.query('SELECT src_url, title, cover_file, description FROM sample_movie_data WHERE src_url = $1', [movie])
+    let hydrateMovies = (...movies) => movies.map(movie => new Promise( (resolve, reject) => db.query('SELECT src_url, title, cover_file, description FROM movie_data WHERE src_url = $1', [movie])
         .then(res => resolve(movieData.push(res.rows[0])))
         .catch(err => reject(console.log(err)))))
 

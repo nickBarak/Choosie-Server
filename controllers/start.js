@@ -7,7 +7,7 @@ router.get('/', async (req, res) =>{
 
     queryDB(res,
         `SELECT *
-        FROM sample_movie_data
+        FROM movie_data
         WHERE
             ${req.query.genres && '(' + req.query.genres.split(',').map((genre, i) => `${i === 0 ? '' : ' OR '}'${genre}' = ANY(genres)`).join('') + ')'}
             ${req.query.timeConstraint ? `${req.query.genres ? 'AND ' : ''}duration_in_mins <= ${req.query.timeConstraint}` : ''}

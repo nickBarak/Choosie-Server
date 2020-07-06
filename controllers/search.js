@@ -18,7 +18,7 @@ router.get('/', async (req, res) => {
                     unnest(genres) genre,
                     title,
                     description
-                FROM sample_movie_data) x
+                FROM movie_data) x
             WHERE
                 LOWER(title) LIKE LOWER('%${req.query.search}%')
                 OR LOWER(actor) LIKE LOWER('%${req.query.search}%')
@@ -31,7 +31,7 @@ router.get('/', async (req, res) => {
             // `SELECT
             //     json_build_object('id', id, 'title', title, 'mpaa_rating', mpaa_rating, 'duration_in_mins', duration_in_mins, 'cover_file', cover_file, 'release_date', release_date, 'genres', genres)
             // FROM
-            //     sample_movie_data
+            //     movie_data
             // WHERE
             //     LOWER(title) LIKE LOWER('%${req.query.search}%')
             //     OR '${req.query.search.split(' ').map(part => part[0].toUpperCase() + part.slice(1).split('').map(c => c.toLowerCase() ).join('')).join(' ')}' = ANY(actors)

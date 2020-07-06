@@ -5,7 +5,7 @@ const { Pool } = require('pg');
 require('dotenv/config');
 
 
-app.use(cors({ origin: /* 'https://choosie.us' */ 'http://localhost:3000' }));
+app.use(cors({ origin: 'https://choosie.us' /* 'http://localhost:3000' */ }));
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 

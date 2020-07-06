@@ -16,7 +16,7 @@ const { queryDB } = require('../Functions');
 //     const { search } = req.query;
 //     try {
 //         var client = await pool.connect(),
-//             { rows } = await client.query(`SELECT json_build_object('title', title, 'rating', mpaa_rating) FROM sample_movie_data WHERE title LIKE $1`, [search]);
+//             { rows } = await client.query(`SELECT json_build_object('title', title, 'rating', mpaa_rating) FROM movie_data WHERE title LIKE $1`, [search]);
 //         rows = rows.map(row => row.json_build_object);
 //         console.log(rows)
 //         res.json(rows.length ? rows : 'No results found');

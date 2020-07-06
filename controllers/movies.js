@@ -4,13 +4,13 @@ const { pool } = require('../server');
 const { queryDB } = require('../Functions');
 
 router.get('/', async (req, res) =>
-    queryDB(res, `SELECT * FROM sample_movie_data WHERE id = $1`, [req.query.id])
+    queryDB(res, `SELECT * FROM movie_data WHERE id = $1`, [req.query.id])
 )
 
 
 router.get('/list', async (req, res) => {
     console.log(req.query);
-    queryDB(res, `SELECT * FROM sample_movie_data WHERE id = ANY('{${req.query.movies ? req.query.movies : ''}}')`)}
+    queryDB(res, `SELECT * FROM movie_data WHERE id = ANY('{${req.query.movies ? req.query.movies : ''}}')`)}
 )
 
 
@@ -18,7 +18,7 @@ router.post('/', async (req, res) => {
     try {
         var client = await pool.connect();
         await client.query(
-            `UPDATE sample_movie_data
+            `UPDATE movie_data
             SET times_saved = times_saved + 1,
                 times_saved_this_month = times_saved_this_month + 1
             WHERE id = $1`, [req.body.movieID]);
@@ -38,7 +38,7 @@ router.put('/', async (req, res) => {
     try {
         var client = await pool.connect();
         await client.query(
-            `UPDATE sample_movie_data
+            `UPDATE movie_data
             SET times_saved_this_month = times_saved_this_month + 1
             WHERE id = $1`, [req.body.movieID]);
         await req.body.inRecent
