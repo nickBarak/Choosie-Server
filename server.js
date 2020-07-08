@@ -5,7 +5,7 @@ const { Pool } = require('pg');
 require('dotenv/config');
 
 app.options('*', cors());
-app.use(cors({ origin: 'https://www.choosie.us' }));
+app.use(cors());
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 
