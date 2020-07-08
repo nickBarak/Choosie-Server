@@ -5,7 +5,7 @@ const { Pool } = require('pg');
 require('dotenv/config');
 
 
-app.use((req, res, next) => {
+app.options((req, res, next) => {
     res.header("Access-Control-Allow-Origin", "*");
     res.header("Access-Control-Allow-Headers", "Origin, Content-Type, Accept, X-Requested-With");
     next();
