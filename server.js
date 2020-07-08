@@ -5,7 +5,11 @@ const { Pool } = require('pg');
 require('dotenv/config');
 
 
-app.use(cors());
+app.use((req, res, next) => {
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header("Access-Control-Allow-Headers", "Origin, Content-Type, Accept, X-Requested-With");
+    next();
+});
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 
