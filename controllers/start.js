@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { queryDB } = require('../Functions');
+const { pool } = require('../server');
 
 router.get('/', async (req, res) =>{
     console.log(req.query);
@@ -30,9 +31,21 @@ router.get('/', async (req, res) =>{
                     }
                 })()}`).join('')})`
                 : ''}
+            ORDER BY
+                cover_file = 'Not available'
             OFFSET ${Number(req.query.set) * 20 - 20} ROWS
             FETCH NEXT 20 ROWS ONLY`)
             
+});
+
+router.post('/', async (req, res) => {
+    try {
+        var client = await pool.connect();
+        for (let selection of req.body.genres)
+            await client.query(`UPDATE users SET genre_selection = genre_selection || '{"${Object.keys(selection)[0]}": ${Object.values(selection)[0]}}' WHERE username = $1`, [req.query.user]);
+        res.send(true);
+    } catch (e) { console.log(e) }
+    finally { client.release() }
 });
 
 module.exports = router

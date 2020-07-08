@@ -9,15 +9,20 @@ router.get('/', async (req, res) => {
         let { rows } = await client.query(
             `SELECT *
             FROM (
-                SELECT
-                    id,
+                SELECT DISTINCT ON
+                    (id) id,
                     json_build_object('id', id, 'title', title, 'mpaa_rating', mpaa_rating, 'duration_in_mins', duration_in_mins, 'cover_file', cover_file, 'release_date', release_date, 'genres', genres),
                     unnest(actors) actor,
                     unnest(writers) writer,
                     unnest(directors) director,
                     unnest(genres) genre,
                     title,
-                    description
+                    description,
+                    cover_file,
+                    mpaa_rating,
+                    duration_in_mins,
+                    release_date,
+                    genres
                 FROM movie_data) x
             WHERE
                 LOWER(title) LIKE LOWER('%${req.query.search}%')
@@ -25,7 +30,11 @@ router.get('/', async (req, res) => {
                 OR LOWER(writer) LIKE LOWER('%${req.query.search}%')
                 OR LOWER(director) LIKE LOWER('%${req.query.search}%')
                 OR LOWER(genre) LIKE LOWER('%${req.query.search}%')
-                OR LOWER(description) LIKE LOWER('%${req.query.search}%')`);
+                OR LOWER(description) LIKE LOWER('%${req.query.search}%')
+            ORDER BY
+                cover_file = 'Not available'
+            OFFSET $1 ROWS
+            FETCH NEXT 11 ROWS ONLY`, [Number(req.query.page) * 10 - 10 || '0']);
 
 
             // `SELECT
@@ -44,8 +53,7 @@ router.get('/', async (req, res) => {
 
 
         await client.query(`UPDATE users SET search_history = array_append(search_history, $1) WHERE username = $2`, [req.query.search, req.query.user ? req.query.user : 'anonymous']);
-        rows = rows.reduce((acc, cur) => acc.find(movie => movie.id === cur.id) ? acc : [ ...acc, cur.json_build_object ], []).slice(Number(req.query.page) * 10 - 10, Number(req.query.page) * 10 + 1)
-        res.json(rows.length ? rows : null);
+        res.json(rows.length ? rows.map(row => row.json_build_object) : null);
     } catch (e) { console.log(e) }
     finally { client.release() }
 })
