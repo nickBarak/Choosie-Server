@@ -2,7 +2,7 @@ const express = require("express");
 const app = express();
 const cors = require('cors');
 const { Pool } = require('pg');
-require('dotenv/config');
+require('dotenv').config();
 
 
 app.use(express.urlencoded({ extended: false }));
