@@ -1,4 +1,4 @@
-const { pool } = require('../server');
+const { pool } = require('./server');
 
 async function queryDB(response, query, queryparams) {
     try {
