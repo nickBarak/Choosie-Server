@@ -71,7 +71,6 @@ router.post('/updateBin', async (req, res) => {
 });
 
 router.post('/deleteBin', async (req, res) => {
-    // console.log(req.body);
     res.json(await new Promise( (resolve, reject) => db.query(
         `UPDATE users SET "jsonb" = "jsonb" - '${req.body.bin}' || '{${req.body.restore}}'`)
             .then(res => resolve(res))

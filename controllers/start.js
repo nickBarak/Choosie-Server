@@ -4,8 +4,6 @@ const { queryDB } = require('../Functions');
 const { pool } = require('../server');
 
 router.get('/', async (req, res) =>{
-    console.log(req.query);
-
     queryDB(res,
         `SELECT *
         FROM movie_data

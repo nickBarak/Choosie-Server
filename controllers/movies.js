@@ -9,7 +9,6 @@ router.get('/', async (req, res) =>
 
 
 router.get('/list', async (req, res) => {
-    console.log(req.query);
     queryDB(res, `SELECT * FROM movie_data WHERE id = ANY('{${req.query.movies ? Number(req.query.movies) : ''}}')`)}
 )
 
