@@ -9,7 +9,7 @@ router.get('/', async (req, res) =>
 
 
 router.get('/list', async (req, res) => {
-    queryDB(res, `SELECT * FROM movie_data WHERE id = ANY('{${req.query.movies ? Number(req.query.movies) : ''}}')`)}
+    queryDB(res, `SELECT * FROM movie_data WHERE id = ANY('{${req.query.movies ? req.query.movies.split(',').map(movieID => Number(movieID)) : ''}}')`)}
 )
 
 

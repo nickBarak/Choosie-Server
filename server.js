@@ -7,17 +7,24 @@ require('dotenv').config();
 
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
+app.use(cors({creditions: true, origin: true}));
 app.options('*', cors());
-app.use(cors());
 
 const pool = new Pool({
-    connectionString: process.env.DATABASE,
+    connectionString: process.env.DATABASE_URL,
     idleTimeoutMillis: 0
 });
 exports.pool = pool;
-pool
-    ? console.log('Connected to PostgreSQL')
-    : console.log('Failed to connect to database');
+/* Reports DB connection status */
+(async _=>{
+    try {
+        var client = await pool.connect();
+        client
+            ? console.log('Connected to PostgreSQL')
+            : console.log('Failed to connect to database');
+    } catch (e) { console.log(e) }
+    finally { client && client.release() }
+})();
 
 
 const index = require('./controllers/index'),

@@ -53,10 +53,10 @@ router.get('/', async (req, res) => {
 
 
         await client.query(`UPDATE users SET search_history = array_append(search_history, $1) WHERE username = $2`, [req.query.search, req.query.user ? req.query.user : 'anonymous']);
-        res.json(rows.length ? rows.map(row => row.json_build_object) : null);
+        res.json(rows.length ? rows.map(row => row.json_build_object) : []);
     } catch (e) { console.log(e) }
-    finally { client.release() }
-})
+    finally { client && client.release() }
+});
 
 router.post('/', async (req, res) =>
     queryDB(res,
@@ -67,6 +67,18 @@ router.post('/', async (req, res) =>
             avg_search_rating = array_sum(search_ratings) / cardinality(search_ratings)
         WHERE
             username = $2`, [req.body.rating, req.body.username || 'anonymous'])
-)
+);
+
+router.get('/cache', async (req, res) => {
+    try {
+        var client = await pool.connect();
+        const { rows } = await client.query(`SELECT * FROM movie_data WHERE id = ANY('{${req.query.movies ? req.query.movies.split(',').map(movieID => Number(movieID)) : ''}}')`);
+
+        await client.query(`UPDATE users SET search_history = array_append(search_history, $1) WHERE username = $2`, [req.query.search, req.query.user ? req.query.user : 'anonymous']);
+
+        res.json(rows.length ? rows.map(row => row.json_build_object) : []);
+    } catch (e) { console.log(e) }
+    finally { client && client.release() }
+});
 
 module.exports = router
