@@ -5,10 +5,10 @@ const { Pool } = require('pg');
 require('dotenv').config();
 
 
+app.use(cors({credentials: true, origin: true}));
+app.options('*', cors());
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
-app.use(cors({creditions: true, origin: true}));
-app.options('*', cors());
 
 const pool = new Pool({
     connectionString: process.env.DATABASE_URL,
