@@ -8,10 +8,7 @@ router.get('/', async (req, res) =>
         `SELECT
             *
         FROM
-            movie_data
-        ORDER BY
-            cover_file = 'Not available',
-            ${req.query.column} DESC
+            popular_${req.query.column}
         OFFSET $1 ROWS
         FETCH NEXT 20 ROWS ONLY`, [Number(req.query.set) * 20 - 20])
 )

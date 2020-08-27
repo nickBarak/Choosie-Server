@@ -31,8 +31,6 @@ router.get('/', async (req, res) => {
                 OR LOWER(director) LIKE LOWER('%${req.query.search}%')
                 OR LOWER(genre) LIKE LOWER('%${req.query.search}%')
                 OR LOWER(description) LIKE LOWER('%${req.query.search}%')
-            ORDER BY
-                cover_file = 'Not available'
             OFFSET $1 ROWS
             FETCH NEXT 11 ROWS ONLY`, [Number(req.query.page) * 10 - 10 || '0']);
 
