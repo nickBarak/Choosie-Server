@@ -4,10 +4,10 @@ const cors = require('cors');
 const { Pool } = require('pg');
 require('dotenv').config();
 
-app.use(cors({ allowedHeaders: ['Content-Type', 'Accept'] }));
-app.options('*', cors());
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
+app.use(cors({ allowedHeaders: ['Content-Type', 'Accept'] }));
+app.options('*', cors());
 
 const pool = new Pool({
     connectionString: process.env.DATABASE_URL,
