@@ -4,7 +4,7 @@ const cors = require('cors');
 const { Pool } = require('pg');
 require('dotenv').config();
 
-app.use(cors());
+app.use(cors({ allowedHeaders: ['Content-Type', 'Accept'] }));
 app.options('*', cors());
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
