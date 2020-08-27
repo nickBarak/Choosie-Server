@@ -6,7 +6,7 @@ require('dotenv').config();
 
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
-app.use(cors({ allowedHeaders: ['Content-Type', 'Accept'] }));
+app.use(cors());
 app.options('*', cors());
 
 const pool = new Pool({
