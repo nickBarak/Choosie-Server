@@ -6,7 +6,7 @@
   "scripts": {
     "start": "node server.js",
     "dev": "nodemon server.js",
-    "gitty": "git add . & git commit -m '.' & git push"
+    "deploy": "git add . & git commit -m '.' & git push & eb deploy"
   },
   "author": "Nick Barak",
   "license": "ISC",
