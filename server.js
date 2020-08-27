@@ -5,7 +5,7 @@ const { Pool } = require('pg');
 require('dotenv').config();
 
 app.use(cors({ preflightContinue: true }));
-app.options('*', cors());
+// app.options('*', cors());
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 
@@ -25,7 +25,22 @@ exports.pool = pool;
     finally { client && client.release() }
 })();
 
-
+access-control-allow-headers
+	content-type
+access-control-allow-methods
+	GET,HEAD,PUT,PATCH,POST,DELETE
+access-control-allow-origin
+	*
+date
+	Thu, 27 Aug 2020 00:41:16 GMT
+server
+	nginx/1.18.0
+vary
+	Access-Control-Request-Headers
+X-Firefox-Spdy
+	h2
+x-powered-by
+	Express
 const index = require('./controllers/index'),
     users = require('./controllers/users'),
     search = require('./controllers/search'),
