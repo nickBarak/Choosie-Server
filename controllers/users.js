@@ -45,7 +45,7 @@ router.post('/', async (req, res) => {
 })
 
 router.get('/:user', async (req, res) =>
-    queryDB(res, `SELECT * FROM users WHERE username = $1`, [req.params.user])
+    queryDB(res, `SELECT * FROM users WHERE LOWER(username) = LOWER(${req.params.user})`)
 )
 
 router.patch('/:user', async (req, res) => {
