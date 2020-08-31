@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const queryDB = require('../Functions');
+const { queryDB } = require('../Functions');
 
 router.get('/', async _=> {
     for (let i = 1; i < 84894; i += 4) {
