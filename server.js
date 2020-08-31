@@ -6,7 +6,13 @@ require('dotenv').config();
 
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
-app.use(cors({ origin: 'https://choosie.us' }));
+app.use(cors({ origin: (origin) => [
+    'https://choosie.us',
+    'http://localhost:8081'
+ ].includes(origin)
+    ? callback(null, true)
+    : callback(new Error('Not allowed by CORS'))
+}));
 app.options('*', cors());
 
 const pool = new Pool({
