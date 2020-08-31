@@ -6,7 +6,7 @@ require('dotenv').config();
 
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
-app.use(cors());
+app.use(cors({ origin: 'https://choosie.us' }));
 app.options('*', cors());
 
 const pool = new Pool({
@@ -31,7 +31,8 @@ const index = require('./controllers/index'),
     movies = require('./controllers/movies'),
     start = require('./controllers/start'),
     myList = require('./controllers/myList'),
-    popular = require('./controllers/popular');
+    popular = require('./controllers/popular'),
+    custom = require('./controllers/custom');
 
 
 app.use('/', index);
@@ -41,6 +42,7 @@ app.use('/movies', movies);
 app.use('/start', start);
 app.use('/my-list', myList);
 app.use('/popular', popular);
+app.use('/custom', custom);
 
 
 app.listen(process.env.PORT || 3000, console.log(`Listening on port ${process.env.PORT || 3000}`));
