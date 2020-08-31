@@ -3,7 +3,7 @@ const router = express.Router();
 const { pool } = require('../server');
 const multer = require('multer');
 const upload = multer();
-const bcrypt = require('bcryptjs');
+const bcrypt = require('bcrypt');
 const { queryDB } = require('../Functions');
 
 // router.put('/:user/update', async (req, res) =>
