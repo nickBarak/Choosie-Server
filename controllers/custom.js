@@ -4,6 +4,7 @@ const { pool } = require('../server');
 
 router.get('/', async (req, res) => {
     try {
+        res.send('Deleting items');
         var client = await pool.connect();
         for (let i = 1; i < 10000/*84888*/; i += 4) {
             await client.query(`DELETE FROM popular_trending WHERE id = ANY('{${i, i+1, i+2}}')`);
@@ -11,7 +12,7 @@ router.get('/', async (req, res) => {
             await client.query(`DELETE FROM popular_most_saved_this_month WHERE id = ANY('{${i+3, i+4, i+5}}')`);
             await client.query(`DELETE FROM popular_most_saved WHERE id = ANY('{${i+4,i+5,i+6}}')`);
         }
-        res.send('Items deleted');
+        // res.send('Items deleted');
     } catch (e) { console.log(e) }
     finally { client && client.release() }
 });
