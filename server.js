@@ -6,7 +6,7 @@ require('dotenv').config();
 
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
-app.use(cors({ origin: (origin) => [
+app.use(cors({ origin: (origin, callback) => [
     'https://choosie.us',
     'http://localhost:8081'
  ].includes(origin)
