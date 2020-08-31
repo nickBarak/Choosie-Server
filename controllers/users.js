@@ -3,6 +3,7 @@ const router = express.Router();
 const { pool } = require('../server');
 const multer = require('multer');
 const upload = multer();
+const bcrypt = require('bcryptjs');
 const { queryDB } = require('../Functions');
 
 // router.put('/:user/update', async (req, res) =>
@@ -25,9 +26,19 @@ const { queryDB } = require('../Functions');
 // router.get('/:user')
 
 
+router.post('/validate', async (req, res) => {
+    try {
+        var client = await pool.connect();
+        const [user] = await client.query(`SELECT username, password FROM users WHERE username = $1`, req.body.username);
+        if (!user) return res.json(false);
+        res.json(await bcrypt.compare(req.body.password, user.password));
+    } catch (e) { console.log(e) }
+    finally { client && client.release() }
+})
+
 router.get('/check', async (req, res) =>
     queryDB(res, 'SELECT username FROM users WHERE username = $1', [req.query.user])
-);
+)
 
 
 router.post('/', async (req, res) => {
@@ -37,16 +48,21 @@ router.post('/', async (req, res) => {
         await client.query(
             `INSERT INTO users
             VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21)`,
-            [name, email, username, password, age, sex, '{}', `{${languages ? languages.toString() : null}}`, 0, 0, 0, 0, 3, '{}', '{}', '{}', '{}', '{}', '{}', true, '{}']);
+            [name, email, username, await bcypt.hash(password, 10), age, sex, '{}', `{${languages ? languages.toString() : null}}`, 0, 0, 0, 0, 3, '{}', '{}', '{}', '{}', '{}', '{}', true, '{}']);
         const result = await client.query(`SELECT * FROM users WHERE username = $1`, [username]);
         res.json(result.rows[0]);
     } catch (e) { console.log(e) }
     finally { client.release() }
 })
 
-router.get('/:user', async (req, res) =>
-    queryDB(res, `SELECT * FROM users WHERE LOWER(username) = LOWER($1)`, [req.params.user])
-)
+router.get('/:user', async (req, res) => {
+    try {
+        var client = await pool.connect();
+        const user = await client.query(`SELECT * FROM users WHERE LOWER(username) = LOWER($1)`, [req.params.user]);
+        res.json({ ...user.rows[0], password: '' });
+    } catch (e) { console.log(e) }
+    finally { client && client.release() }
+})
 
 router.patch('/:user', async (req, res) => {
     const { name, sex, age, languages, email, show_save_history, show_description_on_hover, recent_save_history } = req.body;
@@ -57,9 +73,9 @@ router.put('/:user', async (req, res) => {
     try {
         var client = await pool.connect();
         const response = await client.query(`SELECT password FROM users WHERE username = $1`, [req.params.user]);
-        if (response.rows[0].password !== req.body.currentPassword) throw new Error('Invalid password');
-        const { rows } = client.query(`UPDATE users SET password = $1 WHERE username = $2`, [req.body.newPassword, req.params.user]);
-        res.json(rows);
+        if (!bcrypt.compare(response.rows[0].password, req.body.currentPassword) ) throw new Error('Invalid password');
+        await client.query(`UPDATE users SET password = $1 WHERE username = $2`, [await bcrypt.hash(req.body.newPassword, 10), req.params.user]);
+        res.json(true);
     } catch (e) { console.log(e) }
     finally { client.release() }
 })
