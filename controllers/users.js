@@ -30,6 +30,7 @@ router.post('/validate', async (req, res) => {
     try {
         var client = await pool.connect();
         const [user] = await client.query(`SELECT username, password FROM users WHERE username = $1`, req.body.username);
+        console.log(JSON.stringify(user));
         if (!user) return res.json(false);
         res.json(await bcrypt.compare(req.body.password, user.password));
     } catch (e) { console.log(e) }

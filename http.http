@@ -1,0 +1,7 @@
+POST https://choosie-api.herokuapp.com/validate
+Content-Type: application/json
+
+{
+    "username": "user50",
+    "password": "aaaaaA1!"
+}
