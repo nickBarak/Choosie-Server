@@ -1,21 +1,16 @@
 const express = require('express');
 const router = express.Router();
 const { pool } = require('../server');
-const multer = require('multer');
-const upload = multer();
 const bcrypt = require('bcryptjs');
 const { queryDB } = require('../Functions');
 
 router.post('/validate', async (req, res) => {
     try {
         var client = await pool.connect();
-        const response = await client.query(`SELECT username, password FROM users WHERE username = $1`, req.body.username);
+        const response = await client.query(`SELECT username, password FROM users WHERE username = $1`, [req.body.username]);
         const user = response.rows[0];
-        console.log('user', JSON.stringify(user));
-        if (!user) return res.json(JSON.stringify({ validLogin: false }));
-        const validLogin = await bcrypt.compare(req.body.password, user.password);
-        console.log('valid', JSON.stringify(validLogin));
-        res.json(JSON.stringify({ validLogin }));
+        if (!user) return res.json(false);
+        res.json(await bcrypt.compare(req.body.password, user.password));
     } catch (e) { console.log(e) }
     finally { client && client.release() }
 })
@@ -66,14 +61,14 @@ router.put('/:user', async (req, res) => {
 
 // Bin Management
 
-router.post('/:user/bins', upload.none(), async (req, res) =>
+router.post('/:user/bins', async (req, res) =>
     queryDB(res, `UPDATE users SET bins = bins || $1 WHERE username = $2`, [req.body.bin, req.params.user])
 )
 
-router.put('/:user/bins', upload.none(), async (req, res) =>
+router.put('/:user/bins', async (req, res) =>
     queryDB(res, `UPDATE users SET bins = bins || $1 WHERE username = $2`, [req.body.bin, req.params.user]))
 
-router.delete('/:user/bins', upload.none(), async (req, res) =>
+router.delete('/:user/bins', async (req, res) =>
     queryDB(res, `UPDATE users SET bins = bins - $1 WHERE username = $2`, [req.body.bin, req.params.user])
 )
 
