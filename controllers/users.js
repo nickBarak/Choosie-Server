@@ -3,7 +3,7 @@ const router = express.Router();
 const { pool } = require('../server');
 const multer = require('multer');
 const upload = multer();
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcryptjs');
 const { queryDB } = require('../Functions');
 
 router.post('/validate', async (req, res) => {
