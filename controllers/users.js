@@ -6,30 +6,11 @@ const upload = multer();
 const bcrypt = require('bcrypt');
 const { queryDB } = require('../Functions');
 
-// router.put('/:user/update', async (req, res) =>
-//     queryDB(
-//         `UPDATE users
-//         SET
-//             name = $1,
-//             email = $2,
-//             age = ,
-//             sex = ,
-//             bins = ,
-//             languages = ,
-//             avg_session_length_in_mins = ,
-//             start_clicks
-
-    
-//         WHERE username = $1`, [req.params.user])
-// )
-
-// router.get('/:user')
-
-
 router.post('/validate', async (req, res) => {
     try {
         var client = await pool.connect();
-        const [user] = await client.query(`SELECT username, password FROM users WHERE username = $1`, req.body.username);
+        const response = await client.query(`SELECT username, password FROM users WHERE username = $1`, req.body.username);
+        const user = response.rows[0];
         if (!user) return res.json(false);
         res.json(await bcrypt.compare(req.body.password, user.password));
     } catch (e) { console.log(e) }
