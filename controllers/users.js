@@ -11,9 +11,11 @@ router.post('/validate', async (req, res) => {
         var client = await pool.connect();
         const response = await client.query(`SELECT username, password FROM users WHERE username = $1`, req.body.username);
         const user = response.rows[0];
-        if (!user) return res.json(false);
+        console.log('user', JSON.stringify(user));
+        if (!user) return res.json(JSON.stringify({ validLogin: false }));
         const validLogin = await bcrypt.compare(req.body.password, user.password);
-        res.json({ validLogin });
+        console.log('valid', JSON.stringify(validLogin));
+        res.json(JSON.stringify({ validLogin }));
     } catch (e) { console.log(e) }
     finally { client && client.release() }
 })
