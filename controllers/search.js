@@ -25,30 +25,14 @@ router.get('/', async (req, res) => {
                     genres
                 FROM movie_data) x
             WHERE
-                LOWER(title) LIKE LOWER('%${req.query.search}%')
-                OR LOWER(actor) LIKE LOWER('%${req.query.search}%')
-                OR LOWER(writer) LIKE LOWER('%${req.query.search}%')
-                OR LOWER(director) LIKE LOWER('%${req.query.search}%')
-                OR LOWER(genre) LIKE LOWER('%${req.query.search}%')
-                OR LOWER(description) LIKE LOWER('%${req.query.search}%')
+                LOWER(title) LIKE LOWER('%${req.query.search.replace(/'/g, "''")}%')
+                OR LOWER(actor) LIKE LOWER('%${req.query.search.replace(/'/g, "''")}%')
+                OR LOWER(writer) LIKE LOWER('%${req.query.search.replace(/'/g, "''")}%')
+                OR LOWER(director) LIKE LOWER('%${req.query.search.replace(/'/g, "''")}%')
+                OR LOWER(genre) LIKE LOWER('%${req.query.search.replace(/'/g, "''")}%')
+                OR LOWER(description) LIKE LOWER('%${req.query.search.replace(/'/g, "''")}%')
             OFFSET $1 ROWS
             FETCH NEXT 11 ROWS ONLY`, [Number(req.query.page) * 10 - 10 || '0']);
-
-
-            // `SELECT
-            //     json_build_object('id', id, 'title', title, 'mpaa_rating', mpaa_rating, 'duration_in_mins', duration_in_mins, 'cover_file', cover_file, 'release_date', release_date, 'genres', genres)
-            // FROM
-            //     movie_data
-            // WHERE
-            //     LOWER(title) LIKE LOWER('%${req.query.search}%')
-            //     OR '${req.query.search.split(' ').map(part => part[0].toUpperCase() + part.slice(1).split('').map(c => c.toLowerCase() ).join('')).join(' ')}' = ANY(actors)
-            //     OR '${req.query.search.split(' ').map(part => part[0].toUpperCase() + part.slice(1).split('').map(c => c.toLowerCase() ).join('')).join(' ')}' = ANY(writers)
-            //     OR '${req.query.search.split(' ').map(part => part[0].toUpperCase() + part.slice(1).split('').map(c => c.toLowerCase() ).join('')).join(' ')}' = ANY(directors)
-            //     OR '${req.query.search[0].toUpperCase() + req.query.search.slice(1).split('').map(c => c.toLowerCase()).join('')}' = ANY(genres)
-            //     OR LOWER(description) LIKE LOWER('%${req.query.search}%')
-            // OFFSET $1 ROWS
-            // FETCH NEXT 11 ROWS ONLY`, [Number(req.query.page) * 10 - 10 || '0']);
-
 
         await client.query(`UPDATE users SET search_history = array_append(search_history, $1) WHERE username = $2`, [req.query.search, req.query.user ? req.query.user : 'anonymous']);
         res.json(rows.length ? rows.map(row => row.json_build_object) : []);
