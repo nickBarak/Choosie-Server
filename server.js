@@ -2,13 +2,56 @@ const express = require("express");
 const app = express();
 const cors = require('cors');
 const { Pool } = require('pg');
+// const session = require('express-session');
+// const redisClient = require('redis').createClient();
+// const redisStore = require('connect-redis')(session);
+// const cookieParser = require('cookie-parser');
 require('dotenv').config();
+
+const SESSION_TIMEOUT = 1000 * 60 * 30;
+const {
+    NODE_ENV,
+    PORT,
+    DATABASE_URL,
+    REDIS_PORT,
+    REDIS_HOST,
+    SESSION_NAME,
+    SESSION_SECRET
+} = process.env;
 
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
-app.use(cors({ origin: (origin, callback) => [
+
+/* Redis Session/Cookie Authentication disabled due to differing domain in client */
+
+// app.use(cookieParser());
+// app.use(session({
+//     name: SESSION_NAME,
+//     cookie: {
+//         domain: 'http://localhost:8081',
+//         maxAge: 1000 * 60 * 30,
+//         sameSite: false,
+//         secure: NODE_ENV === 'production',
+//         httpOnly: false
+//     },
+//     resave: false,
+//     saveUninitialized: false,
+//     secret: SESSION_SECRET,
+//     maxAge: SESSION_TIMEOUT,
+//     rolling: true,
+//     store: new redisStore({
+//         host: REDIS_HOST,
+//         port: REDIS_PORT || 6379,
+//         client: redisClient,
+//         ttl: 1000 * 60 * 60
+//     })
+// }));
+app.use(cors({
+    // credentials: true,
+    origin: (origin, callback) => [
     'https://choosie.us',
-    'http://localhost:8081'
+    'http://localhost:8081',
+    'http://localhost:8082'
  ].includes(origin)
     ? callback(null, true)
     : callback(new Error('Not allowed by CORS'))
@@ -16,10 +59,10 @@ app.use(cors({ origin: (origin, callback) => [
 app.options('*', cors());
 
 const pool = new Pool({
-    connectionString: process.env.DATABASE_URL,
+    connectionString: DATABASE_URL,
     idleTimeoutMillis: 0
 });
-exports.pool = pool;
+
 /* Reports DB connection status */
 (async _=>{
     try {
@@ -40,7 +83,6 @@ const index = require('./controllers/index'),
     popular = require('./controllers/popular'),
     custom = require('./controllers/custom');
 
-
 app.use('/', index);
 app.use('/users', users);
 app.use('/search', search);
@@ -50,6 +92,6 @@ app.use('/my-list', myList);
 app.use('/popular', popular);
 app.use('/custom', custom);
 
+app.listen(PORT || 3000, console.log(`Listening on port ${PORT || 3000}`));
 
-app.listen(process.env.PORT || 3000, console.log(`Listening on port ${process.env.PORT || 3000}`));
-
+module.exports = { pool, /* redisClient */ }

@@ -1,16 +1,42 @@
 const express = require('express');
 const router = express.Router();
-const { pool } = require('../server');
+const { pool, redisClient } = require('../server');
 const bcrypt = require('bcryptjs');
 const { queryDB } = require('../Functions');
 
-router.post('/validate', async (req, res) => {
+const checkIfLoggedIn = (req, res, next, shouldBeLoggedIn=true) => {
+    next();
+
+    /* Redis Session/Cookie Authentication disabled due to differing domain in client */
+
+    // if (!req.sessionID) { next() }
+    // redisClient.get(req.sessionID, (err, reply) => {
+    //     if (err) throw err;
+    //     if (reply) {
+    //         return shouldBeLoggedIn
+    //             ? next()
+    //             : next(new Error('You are already logged in'));
+    //     } else return shouldBeLoggedIn ? next(new Error('You are not logged in')) : next();
+    // });
+    // redisClient.quit();
+}
+
+router.post('/validate', (req, res, next) => checkIfLoggedIn(req, res, next, false), async (req, res) => {
     try {
         var client = await pool.connect();
         const response = await client.query(`SELECT username, password FROM users WHERE username = $1`, [req.body.username]);
         const user = response.rows[0];
         if (!user) return res.json(false);
-        res.json(await bcrypt.compare(req.body.password, user.password));
+
+        let validLogin = await bcrypt.compare(req.body.password, user.password);
+
+        if (!validLogin) return res.json(false);
+        res.json(true);
+
+        /* Cache user credentials */
+        // redisClient.set(req.sessionID, req.body.username);
+        // redisClient.quit();
+        
     } catch (e) { console.log(e) }
     finally { client && client.release() }
 })
@@ -34,7 +60,7 @@ router.post('/', async (req, res) => {
     finally { client.release() }
 })
 
-router.get('/:user', async (req, res) => {
+router.get('/:user', checkIfLoggedIn, async (req, res) => {
     try {
         var client = await pool.connect();
         const user = await client.query(`SELECT * FROM users WHERE LOWER(username) = LOWER($1)`, [req.params.user]);
@@ -43,12 +69,12 @@ router.get('/:user', async (req, res) => {
     finally { client && client.release() }
 })
 
-router.patch('/:user', async (req, res) => {
+router.patch('/:user', checkIfLoggedIn, async (req, res) => {
     const { name, sex, age, languages, email, show_save_history, show_description_on_hover, recent_save_history } = req.body;
     queryDB(res, `UPDATE users SET name = $1, sex = $2, age = $3, languages = $4, email = $5, show_save_history = $6, show_description_on_hover = $7, recent_save_history = $8 WHERE username = $9`, [name, sex, Number(age), languages, email, show_save_history, show_description_on_hover, recent_save_history, req.params.user]);
 })
 
-router.put('/:user', async (req, res) => {
+router.put('/:user', checkIfLoggedIn, async (req, res) => {
     try {
         var client = await pool.connect();
         const response = await client.query(`SELECT password FROM users WHERE username = $1`, [req.params.user]);
