@@ -73,6 +73,7 @@ const pool = new Pool({
     } catch (e) { console.log(e) }
     finally { client && client.release() }
 })();
+exports.pool = pool;
 
 const index = require('./controllers/index'),
     users = require('./controllers/users'),
@@ -94,4 +95,4 @@ app.use('/custom', custom);
 
 app.listen(PORT || 3000, console.log(`Listening on port ${PORT || 3000}`));
 
-module.exports = { pool, /* redisClient */ }
+// module.exports = { pool, redisClient }
