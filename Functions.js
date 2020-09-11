@@ -1,4 +1,5 @@
 const { pool } = require('./server');
+require('dotenv').config();
 
 async function queryDB(response, query, queryparams) {
     try {
@@ -9,4 +10,14 @@ async function queryDB(response, query, queryparams) {
     finally { client && client.release() }
 }
 
-exports.queryDB = queryDB
+const checkAuthentication = (req, res, next, shouldHave=true) => console.log(req.sessionID, req.session.username) ||
+    req.session.username
+        ? shouldHave
+            ? next()
+            : res.send('Already logged in')
+            // : req.session.destroy() && res.clearCookie(process.env.SESSION_NAME)
+        : shouldHave
+            ? res.end('Not logged in')
+            : next()
+
+module.exports = { queryDB, checkAuthentication }

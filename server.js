@@ -2,10 +2,9 @@ const express = require("express");
 const app = express();
 const cors = require('cors');
 const { Pool } = require('pg');
-// const session = require('express-session');
-// const redisClient = require('redis').createClient();
-// const redisStore = require('connect-redis')(session);
-// const cookieParser = require('cookie-parser');
+const session = require('express-session');
+const redisClient = require('redis').createClient();
+const redisStore = require('connect-redis')(session);
 require('dotenv').config();
 
 const SESSION_TIMEOUT = 1000 * 60 * 30;
@@ -21,40 +20,46 @@ const {
 
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
+app.set('trust proxy');
+app.use(session({
+    name: SESSION_NAME,
+    cookie: {
+        domain: 'http://127.0.0.1:8081',
+        maxAge: 1000 * 60 * 30,
+        sameSite: true,
+        secure: NODE_ENV === 'production',
+        httpOnly: false
+    },
+    resave: false,
+    saveUninitialized: true,
+    secret: SESSION_SECRET,
+    maxAge: SESSION_TIMEOUT,
+    rolling: true,
+    store: new redisStore({
+        host: REDIS_HOST,
+        port: REDIS_PORT || 6379,
+        client: redisClient,
+        ttl: 60 * 60
+    })
+}));
 
-/* Redis Session/Cookie Authentication disabled due to differing domain in client */
+// app.get('/destroy-session', (req, res) => {
+//     req.session.destroy();
+//     res.clearCookie(SESSION_NAME);
+// });
 
-// app.use(cookieParser());
-// app.use(session({
-//     name: SESSION_NAME,
-//     cookie: {
-//         domain: 'http://localhost:8081',
-//         maxAge: 1000 * 60 * 30,
-//         sameSite: false,
-//         secure: NODE_ENV === 'production',
-//         httpOnly: false
-//     },
-//     resave: false,
-//     saveUninitialized: false,
-//     secret: SESSION_SECRET,
-//     maxAge: SESSION_TIMEOUT,
-//     rolling: true,
-//     store: new redisStore({
-//         host: REDIS_HOST,
-//         port: REDIS_PORT || 6379,
-//         client: redisClient,
-//         ttl: 1000 * 60 * 60
-//     })
-// }));
 app.use(cors({
-    // credentials: true,
+    credentials: true,
     origin: (origin, callback) => [
+    undefined,
     'https://choosie.us',
     'http://localhost:8081',
-    'http://localhost:8082'
+    'http://localhost:8082',
+    'http://127.0.0.1:8081',
+    'http://127.0.0.1:8082'
  ].includes(origin)
     ? callback(null, true)
-    : callback(new Error('Not allowed by CORS'))
+    : callback(new Error(origin + ' not allowed by CORS'))
 }));
 app.options('*', cors());
 
@@ -81,8 +86,8 @@ const index = require('./controllers/index'),
     movies = require('./controllers/movies'),
     start = require('./controllers/start'),
     myList = require('./controllers/myList'),
-    popular = require('./controllers/popular'),
-    custom = require('./controllers/custom');
+    popular = require('./controllers/popular');
+    // custom = require('./controllers/custom');
 
 app.use('/', index);
 app.use('/users', users);
@@ -91,8 +96,6 @@ app.use('/movies', movies);
 app.use('/start', start);
 app.use('/my-list', myList);
 app.use('/popular', popular);
-app.use('/custom', custom);
+// app.use('/custom', custom);
 
 app.listen(PORT || 3000, console.log(`Listening on port ${PORT || 3000}`));
-
-// module.exports = { pool, redisClient }
