@@ -24,9 +24,9 @@ app.set('trust proxy');
 app.use(session({
     name: SESSION_NAME,
     cookie: {
-        domain: 'http://127.0.0.1:8081',
+        domain: 'https://choosie.us',
         maxAge: 1000 * 60 * 30,
-        sameSite: true,
+        sameSite: false,
         secure: NODE_ENV === 'production',
         httpOnly: false
     },
