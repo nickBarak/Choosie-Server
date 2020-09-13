@@ -16,7 +16,6 @@ router.post('/validate', (req, res, next) => checkAuthentication(req, res, next,
         if (!validLogin) return res.json(false);
         /* Cache user credentials */
         req.session.username = user.username;
-        res.session.save();
         
         res.json(true);
     } catch (e) { console.log(e) }
