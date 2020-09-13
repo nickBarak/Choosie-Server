@@ -2,7 +2,7 @@ const express = require("express");
 const app = express();
 const cors = require('cors');
 const { Pool } = require('pg');
-const session = require('express-session');
+const cookieSession = require('cookie-session');
 const redis = require('redis');
 const redisStore = require('connect-redis')(session);
 const url = require('url');
@@ -27,9 +27,10 @@ prod && redisClient.auth(process.env.REDIS_PASSWORD);
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 app.set('trust proxy');
-app.use(session({
+app.use(cookieSession({
     name: SESSION_NAME,
     cookie: {
+        domain: '.choosie.us',
         maxAge: 1000 * 60 * 30,
         sameSite: false,
         secure: prod,
