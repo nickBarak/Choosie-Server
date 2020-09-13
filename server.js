@@ -30,7 +30,6 @@ app.set('trust proxy');
 app.use(session({
     name: SESSION_NAME,
     cookie: {
-        domain: '.choosie.us',
         maxAge: 1000 * 60 * 30,
         sameSite: false,
         secure: prod,
