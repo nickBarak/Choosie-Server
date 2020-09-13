@@ -4,7 +4,7 @@ const cors = require('cors');
 const { Pool } = require('pg');
 const cookieSession = require('cookie-session');
 const redis = require('redis');
-const redisStore = require('connect-redis')(session);
+const redisStore = require('connect-redis')(cookieSession);
 const url = require('url');
 require('dotenv').config();
 
