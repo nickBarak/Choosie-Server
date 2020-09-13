@@ -60,7 +60,7 @@ app.use(session({
         httpOnly: prod
     },
     resave: false,
-    saveUninitialized: true,
+    saveUninitialized: !prod,
     secret: SESSION_SECRET,
     maxAge: SESSION_TIMEOUT,
     rolling: true,
