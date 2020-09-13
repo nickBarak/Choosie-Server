@@ -73,9 +73,9 @@ app.use(session({
 app.get('/destroy-session', (req, res) => {
     const { sessionID } = req;
     if (sessionID) {
-        req.session.destroy();
-        res.json(true);
         res.clearCookie(SESSION_NAME);
+        res.json(true);
+        req.session.destroy();
     } else {
         res.json(false);
     }
