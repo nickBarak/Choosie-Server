@@ -2,7 +2,6 @@ const express = require("express");
 const app = express();
 const cors = require('cors');
 const { Pool } = require('pg');
-// const cookieSession = require('cookie-session');
 const session = require('express-session');
 const redis = require('redis');
 const redisStore = require('connect-redis')(session);
@@ -28,16 +27,23 @@ prod && redisClient.auth(process.env.REDIS_PASSWORD);
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 
+const whiteList = prod
+    ? [ 
+        undefined,
+        'https://choosie.us',
+    ]
+    : [
+        undefined,
+        'https://choosie.us',
+        'http://localhost:8081',
+        'http://localhost:8082',
+        'http://127.0.0.1:8081',
+        'http://127.0.0.1:8082'
+    ];
+
 app.use(cors({
     credentials: true,
-    origin: (origin, callback) => [
-    undefined,
-    'https://choosie.us',
-    'http://localhost:8081',
-    'http://localhost:8082',
-    'http://127.0.0.1:8081',
-    'http://127.0.0.1:8082'
- ].includes(origin)
+    origin: (origin, callback) => whiteList.includes(origin)
     ? callback(null, true)
     : callback(new Error(origin + ' not allowed by CORS'))
 }));
@@ -47,7 +53,7 @@ app.set('trust proxy', 1);
 app.use(session({
     name: SESSION_NAME,
     cookie: {
-        domain: '.choosie.us',
+        domain: prod ? '.choosie.us' : '127.0.0.1:8081',
         maxAge: 1000 * 60 * 30,
         sameSite: false,
         secure: prod,
