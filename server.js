@@ -44,7 +44,7 @@ app.use(cors({
 app.options('*', cors());
 
 app.set('trust proxy', 1);
-app.use(cookieSession({
+app.use(session({
     name: SESSION_NAME,
     cookie: {
         domain: '.choosie.us',
