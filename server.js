@@ -18,9 +18,11 @@ const {
     SESSION_SECRET
 } = process.env;
 
+const prod = NODE_ENV === 'production';
+
 const redisURL = url.parse(REDIS_URL);
 const redisClient = redis.createClient(redisURL.port, redisURL.hostname, { no_ready_check: true });
-NODE_ENV === 'production' && redisClient.auth(process.env.REDIS_PASSWORD);
+prod && redisClient.auth(process.env.REDIS_PASSWORD);
 
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
@@ -28,11 +30,11 @@ app.set('trust proxy');
 app.use(session({
     name: SESSION_NAME,
     cookie: {
-        domain: 'https://choosie.us',
+        domain: 'choosie.us',
         maxAge: 1000 * 60 * 30,
         sameSite: false,
-        secure: NODE_ENV === 'production',
-        httpOnly: false
+        secure: prod,
+        httpOnly: prod
     },
     resave: false,
     saveUninitialized: true,
