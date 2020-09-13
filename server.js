@@ -3,8 +3,9 @@ const app = express();
 const cors = require('cors');
 const { Pool } = require('pg');
 const session = require('express-session');
-const redisClient = require('redis').createClient();
+const redis = require('redis');
 const redisStore = require('connect-redis')(session);
+const url = require('url');
 require('dotenv').config();
 
 const SESSION_TIMEOUT = 1000 * 60 * 30;
@@ -12,11 +13,14 @@ const {
     NODE_ENV,
     PORT,
     DATABASE_URL,
-    REDIS_PORT,
-    REDIS_HOST,
+    REDIS_URL,
     SESSION_NAME,
     SESSION_SECRET
 } = process.env;
+
+const redisURL = url.parse(REDIS_URL);
+const redisClient = redis.createClient(redisURL.port, redisURL.hostname, { no_ready_check: true });
+NODE_ENV === 'production' && redisClient.auth(process.env.REDIS_PASSWORD);
 
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
@@ -36,9 +40,6 @@ app.use(session({
     maxAge: SESSION_TIMEOUT,
     rolling: true,
     store: new redisStore({
-        host: REDIS_HOST,
-        port: REDIS_PORT || 6379,
-        password: NODE_ENV === 'production' ? process.env.REDIS_PASSWORD : null,
         client: redisClient,
         ttl: 60 * 60
     })
@@ -88,6 +89,7 @@ const index = require('./controllers/index'),
     start = require('./controllers/start'),
     myList = require('./controllers/myList'),
     popular = require('./controllers/popular');
+const { RedisClient } = require("redis");
     // custom = require('./controllers/custom');
 
 app.use('/', index);
