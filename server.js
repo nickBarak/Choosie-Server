@@ -38,7 +38,7 @@ app.use(session({
     store: new redisStore({
         host: REDIS_HOST,
         port: REDIS_PORT || 6379,
-        password: REDIS_PASSWORD ? REDIS_PASSWORD : null,
+        password: NODE_ENV === 'production' ? REDIS_PASSWORD : null,
         client: redisClient,
         ttl: 60 * 60
     })
