@@ -64,10 +64,10 @@ app.use(session({
     })
 }));
 
-// app.get('/destroy-session', (req, res) => {
-//     req.session.destroy();
-//     res.clearCookie(SESSION_NAME);
-// });
+app.get('/destroy-session', (req, res) => {
+    req.session.destroy();
+    res.clearCookie(SESSION_NAME);
+});
 
 const pool = new Pool({
     connectionString: DATABASE_URL,

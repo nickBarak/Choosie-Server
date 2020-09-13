@@ -14,8 +14,7 @@ const checkAuthentication = (req, res, next, shouldHave=true) => console.log(req
     req.session.username
         ? shouldHave
             ? next()
-            : res.send('Already logged in')
-            // : req.session.destroy() && res.clearCookie(process.env.SESSION_NAME)
+            : req.session.destroy() && res.clearCookie(process.env.SESSION_NAME)
         : shouldHave
             ? res.end('Not logged in')
             : next()
