@@ -14,7 +14,7 @@ const checkAuthentication = (req, res, next, shouldHave=true) =>
     req.session.username
         ? shouldHave
             ? next()
-            : res.redirect(req.baseUrl + '/destroy-session')
+            : res.redirect(process.env.NODE_ENV === 'production' ? 'https://api.choosie.us/destroy-session' : `http://localhost:${process.env.PORT}/destroy-session`)
         : shouldHave
             ? res.end('Not logged in')
             : next()
