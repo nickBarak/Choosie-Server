@@ -10,11 +10,11 @@ async function queryDB(response, query, queryparams) {
     finally { client && client.release() }
 }
 
-const checkAuthentication = (req, res, next, shouldHave=true) => console.log(req.sessionID, req.session.username) ||
+const checkAuthentication = (req, res, next, shouldHave=true) =>
     req.session.username
         ? shouldHave
             ? next()
-            : req.session.destroy() && res.clearCookie(process.env.SESSION_NAME)
+            : res.redirect('/destroy-session')
         : shouldHave
             ? res.end('Not logged in')
             : next()
