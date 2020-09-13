@@ -66,9 +66,15 @@ app.use(session({
 
 app.get('/destroy-session', (req, res) => {
     const { sessionID } = req;
-    req.session.destroy();
-    res.clearCookie(SESSION_NAME);
-    console.log(`Destroyed session ${sessionID}`);
+    if (sessionID) {
+        req.session.destroy();
+        res.clearCookie(SESSION_NAME);
+        res.json(true);
+        console.log(`Destroyed session ${sessionID}`);
+    } else {
+        res.json(false);
+        console.log('No session to destroy');
+    }
 });
 
 const pool = new Pool({
