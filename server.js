@@ -4,7 +4,7 @@ const cors = require('cors');
 const { Pool } = require('pg');
 const cookieSession = require('cookie-session');
 const redis = require('redis');
-const redisStore = require('connect-redis')(cookieSession);
+// const redisStore = require('connect-redis')(cookieSession);
 const url = require('url');
 require('dotenv').config();
 
@@ -41,10 +41,10 @@ app.use(cookieSession({
     secret: SESSION_SECRET,
     maxAge: SESSION_TIMEOUT,
     rolling: true,
-    store: new redisStore({
-        client: redisClient,
-        ttl: 60 * 60
-    })
+    // store: new redisStore({
+    //     client: redisClient,
+    //     ttl: 60 * 60
+    // })
 }));
 
 // app.get('/destroy-session', (req, res) => {
