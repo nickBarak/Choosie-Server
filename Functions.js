@@ -14,7 +14,7 @@ const checkAuthentication = (req, res, next, shouldHave=true) =>
     req.session.username
         ? shouldHave
             ? next()
-            : res.redirect('destroy-session')
+            : res.redirect(req.baseUrl + '/destroy-session')
         : shouldHave
             ? res.end('Not logged in')
             : next()
