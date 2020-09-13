@@ -26,31 +26,6 @@ prod && redisClient.auth(process.env.REDIS_PASSWORD);
 
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
-app.set('trust proxy');
-app.use(cookieSession({
-    name: SESSION_NAME,
-    cookie: {
-        domain: '.choosie.us',
-        maxAge: 1000 * 60 * 30,
-        sameSite: false,
-        secure: prod,
-        httpOnly: prod
-    },
-    resave: false,
-    saveUninitialized: true,
-    secret: SESSION_SECRET,
-    maxAge: SESSION_TIMEOUT,
-    rolling: true,
-    // store: new redisStore({
-    //     client: redisClient,
-    //     ttl: 60 * 60
-    // })
-}));
-
-// app.get('/destroy-session', (req, res) => {
-//     req.session.destroy();
-//     res.clearCookie(SESSION_NAME);
-// });
 
 app.use(cors({
     credentials: true,
@@ -66,6 +41,32 @@ app.use(cors({
     : callback(new Error(origin + ' not allowed by CORS'))
 }));
 app.options('*', cors());
+
+app.set('trust proxy', 1);
+app.use(cookieSession({
+    name: SESSION_NAME,
+    // cookie: {
+    //     domain: '.choosie.us',
+    //     maxAge: 1000 * 60 * 30,
+    //     sameSite: false,
+    //     secure: prod,
+    //     httpOnly: prod
+    // },
+    resave: false,
+    saveUninitialized: true,
+    secret: SESSION_SECRET,
+    maxAge: SESSION_TIMEOUT,
+    rolling: true,
+    // store: new redisStore({
+    //     client: redisClient,
+    //     ttl: 60 * 60
+    // })
+}));
+
+// app.get('/destroy-session', (req, res) => {
+//     req.session.destroy();
+//     res.clearCookie(SESSION_NAME);
+// });
 
 const pool = new Pool({
     connectionString: DATABASE_URL,
