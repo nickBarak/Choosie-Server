@@ -65,8 +65,10 @@ app.use(session({
 }));
 
 app.get('/destroy-session', (req, res) => {
+    const { sessionID } = req;
     req.session.destroy();
     res.clearCookie(SESSION_NAME);
+    console.log(`Destroyed session ${sessionID}`);
 });
 
 const pool = new Pool({
@@ -93,7 +95,6 @@ const index = require('./controllers/index'),
     start = require('./controllers/start'),
     myList = require('./controllers/myList'),
     popular = require('./controllers/popular');
-const { RedisClient } = require("redis");
     // custom = require('./controllers/custom');
 
 app.use('/', index);
