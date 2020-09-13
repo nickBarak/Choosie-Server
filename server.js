@@ -74,12 +74,10 @@ app.get('/destroy-session', (req, res) => {
     const { sessionID } = req;
     if (sessionID) {
         req.session.destroy();
-        res.clearCookie(SESSION_NAME);
         res.json(true);
-        console.log(`Destroyed session ${sessionID}`);
+        res.clearCookie(SESSION_NAME);
     } else {
         res.json(false);
-        console.log('No session to destroy');
     }
 });
 
