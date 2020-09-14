@@ -1,1 +1,1 @@
-See https://github.com/nickBarak/Choosie-React
+See https://github.com/nickBarak/Choosie-Client
